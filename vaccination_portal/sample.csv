@@ -1,0 +1,6 @@
+name,class,id,vaccinated,vaccineName,vaccinatedDate
+Alice,5A,1001,No
+Bob,6B,1002,Yes,Covaxin,23/05/2023
+Charlie,7C,1003,Yes,Covaxin,23/05/2023
+David,8A,1004,No,
+Eve,6A,1005,true,Covishield,23/05/2023
