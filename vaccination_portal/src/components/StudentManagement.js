@@ -1,25 +1,51 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Papa from 'papaparse';
 
 const StudentManagement = () => {
   const [students, setStudents] = useState([]);
   const [search, setSearch] = useState('');
-  const [formData, setFormData] = useState({ name: '', class: '', id: '', vaccinated: '', vaccineName: '', vaccinatedDate: '' });
+  const [formData, setFormData] = useState({ name: '', class: '', id: '', vaccination_status: '', vaccine_name: '', vaccination_date: '' });
   const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(false)
 
-  const handleFormSubmit = (e) => {
+  const fetchStudentData = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch("http://127.0.0.1:5000/api/students");
+      const data = await response.json();
+      setStudents(data);
+    } catch (err) {
+      console.error("Failed to fetch metrics", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFormSubmit = async() => {
     debugger
-   
-    e.preventDefault();
-    setStudents((prev) => {
-      const exists = prev.find((s) => s.id === formData.id);
-      if (exists) {
-        return prev.map((s) => (s.id === formData.id ? formData : s));
-      }
-      return [...prev, formData];
-    });
-    setShowForm(false);
-    setFormData({ name: '', class: '', id: '', vaccinated: '', vaccineName: '', vaccinatedDate: '' });
+    try{
+    const response = await fetch("http://127.0.0.1:5000/api/studentdata", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(
+        formData
+      )
+    
+    }); 
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+    }
+  debugger;
+    const data = await response.json();
+    console.log("Response:", data);
+    fetchStudentData()
+ 
+  } catch (error) {
+    console.error("Fetch failed:", error);
+  }
+
   };
 
   const handleCSVUpload = (e) => {
@@ -70,9 +96,24 @@ const StudentManagement = () => {
   };
 
 const checkFields = () => {
-  return !formData.name || !formData.class || !formData.id || !formData.vaccinated || (formData.vaccinated === "Yes" && (!formData.vaccineName || !formData.vaccinatedDate));
+  return !formData.name || !formData.class  || !formData.vaccination_status || (formData.vaccination_status === "Yes" && (!formData.vaccine_name || !formData.vaccination_date));
 };
 
+useEffect(() => {
+  
+
+  fetchStudentData();
+ 
+}, [])
+if(loading){
+  return(
+    <div className="d-flex justify-content-center align-items-center" style={{ height: '200px' }}>
+    <div className="spinner-border text-primary" role="status">
+      <span className="visually-hidden">Loading...</span>
+    </div>
+  </div>
+  )
+}
   return (
     <div className="container mt-4">
       <h3>Student Management</h3>
@@ -110,12 +151,12 @@ const checkFields = () => {
               <td>{s.name}</td>
               <td>{s.class}</td>
               <td>{s.id}</td>
-              <td>{s.vaccinated }</td>
-              <td>{s.vaccineName || '-'}</td>
-              <td>{s.vaccinatedDate || '-'}</td>
+              <td>{(s.vaccine_name !== null && s.vaccine_date !== null) ?"Yes" :"No"  }</td>
+              <td>{s.vaccine_name || '-'}</td>
+              <td>{s.vaccine_date || '-'}</td>
               <td>
-                <button className={`btn ${s.vaccinated === "Yes" ? "btn-success" : "btn-danger"} btn-sm `} onClick={() => handleVaccinate(s)}>
-                  {s.vaccinated === "Yes" ? 'Vaccinated' : 'Vaccinate'}
+                <button className={`btn ${(s.vaccine_name !== null && s.vaccine_date !==null) ? "btn-success" : "btn-danger"} btn-sm `} onClick={() => handleVaccinate(s)}>
+                  {(s.vaccine_name !== null && s.vaccine_date !==null) ? 'Vaccinated' : 'Vaccinate'}
                 </button>
               </td>
             </tr>
@@ -179,7 +220,7 @@ const checkFields = () => {
                       onChange={(e) => setFormData({ ...formData, class: e.target.value })}
                     />
                   </div>
-                  <div className="form-group">
+                  {/* <div className="form-group">
                     <label>ID</label>
                     <input
                       type="text"
@@ -187,14 +228,14 @@ const checkFields = () => {
                       value={formData.id}
                       onChange={(e) => setFormData({ ...formData, id: e.target.value })}
                     />
-                  </div>
+                  </div> */}
                   <div className="form-group">
                     <label>Vaccination Status</label>
                     <select
                       className="form-control"
-                      value={formData.vaccinated}
+                      value={formData.vaccination_status}
                       onChange={(e) =>
-                        setFormData({ ...formData, vaccinated: e.target.value  })
+                        setFormData({ ...formData, vaccination_status: e.target.value  })
                       }
                     >
                       <option value="">Select</option>
@@ -202,25 +243,23 @@ const checkFields = () => {
                       <option value="No">No</option>
                     </select>
                   </div>
-                  <div className="form-group">
-                    <label>Vaccine Name</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={formData.vaccineName}
-                      onChange={(e) => setFormData({ ...formData, vaccineName: e.target.value })}
-                    />
-                  </div>
-                  {formData.vaccinated === "Yes" && (
-                    <div className="form-group">
+                  
+                  {formData.vaccination_status === "Yes" && (
+                    <><div className="form-group">
                       <label>Vaccination Date</label>
                       <input
                         type="date"
                         className="form-control"
-                        value={formData.vaccinatedDate}
-                        onChange={(e) => setFormData({ ...formData, vaccinatedDate: e.target.value })}
-                      />
-                    </div>
+                        value={formData.vaccination_date}
+                        onChange={(e) => setFormData({ ...formData, vaccination_date: e.target.value })} />
+                    </div><div className="form-group">
+                        <label>Vaccine Name</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={formData.vaccine_name}
+                          onChange={(e) => setFormData({ ...formData, vaccine_name: e.target.value })} />
+                      </div></>
                   )}
                   {/* <div className="form-group">
                     <label>Vaccination Date</label>
