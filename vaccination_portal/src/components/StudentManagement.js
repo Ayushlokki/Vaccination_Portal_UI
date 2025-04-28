@@ -48,14 +48,27 @@ const StudentManagement = () => {
 
   };
 
-  const handleCSVUpload = (e) => {
+  const handleCSVUpload = async(e) => {
     const file = e.target.files[0];
-    Papa.parse(file, {
-      header: true,
-      complete: (results) => {
-        setStudents((prev) => [...prev, ...results.data]);
-      },
-    });
+    const data = new FormData();
+    data.append('file', file);
+    // Papa.parse(file, {
+    //   header: true,
+    //   complete: (results) => {
+    //     setStudents((prev) => [...prev, ...results.data]);
+    //   },
+    // });
+    try {
+      const response = await fetch('http://127.0.0.1:5000/api/vaccination_upload', {
+        method: 'POST',
+        body: data
+        // Note: fetch automatically sets the correct Content-Type boundary
+      });
+      const json = await response.json();
+      console.log((JSON.stringify(json, null, 2)));
+    } catch (error) {
+      alert(error.toString());
+    }
   };
 
   const handleVaccinate = (student) => {
