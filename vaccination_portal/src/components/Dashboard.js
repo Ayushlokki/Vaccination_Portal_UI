@@ -4,7 +4,7 @@ const Dashboard = () => {
   const [metrics, setMetrics] = useState({
     total_students: 0,
     vaccinated_count: 0,
-    vaccinated_percentage:0,
+    vaccinated_percent:0,
     upcoming_drives: [],
 
 
@@ -49,12 +49,12 @@ const Dashboard = () => {
             <div className="card-body">
               <h5 className="card-title">Vaccinated Students</h5>
               <p className="card-text display-6">{metrics.vaccinated_count}</p>
-              <p className="text-muted">({metrics.vaccinated_percentage}% vaccinated)</p>
+              <p className="text-muted">({metrics.vaccinated_percent}% vaccinated)</p>
             </div>
           </div>
         </div>
 
-        {/* <div className="col-md-4 mb-4">
+        <div className="col-md-4 mb-4">
           <div className="card">
             <div className="card-body">
               <h5 className="card-title">Upcoming Drives</h5>
@@ -73,7 +73,7 @@ const Dashboard = () => {
               )}
             </div>
           </div>
-        </div> */}
+        </div>
       </div>
     </div>
   );
