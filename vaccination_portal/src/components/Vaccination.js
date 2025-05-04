@@ -98,23 +98,23 @@ const Vaccination = () => {
     return drives.find((drive) => drive.id === id);
   };
 
-  const handleEdit = (id) => {
+  const handleEdit = async (id) => {
     const selectedDrive =getDriveById(id);
     console.log("selected",selectedDrive)
-    // try {
-    //   debugger;
-    //   const response = await fetch(`http://127.0.0.1:5000/api/drives/${id}`, {
-    //     method: 'PUT',
-    //     body: JSON.stringify(selectedDrive),
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //   });
-    //   const json = await response.json();
-    //   console.log((JSON.stringify(json, null, 2)));
-    // } catch (error) {
-    //   alert(error.toString());
-    // }
+    try {
+      debugger;
+      const response = await fetch(`http://127.0.0.1:5000/api/drives/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(selectedDrive),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const json = await response.json();
+      console.log((JSON.stringify(json, null, 2)));
+    } catch (error) {
+      alert(error.toString());
+    }
   };
 
   const isPast = (date) => new Date(date) < new Date();
@@ -172,16 +172,16 @@ console.log("drives",drives)
               <td>
                 <input
                   type="date"
-                  value={drive.vaccine_date}
+                  value={drive.drive_date}
                   onChange={(e) => handleTabeDataChange(e,drive.id)}
-                  name="vaccine_date"
+                  name="drive_date"
 
                 />
               </td>
               <td>
                 <input
                   type="number"
-                  value={drive.doses}
+                  value={drive.available_doses}
                   onChange={(e) => handleTabeDataChange(e,drive.id)}
                   name="available_doses"
 
@@ -190,7 +190,7 @@ console.log("drives",drives)
               <td>
                 <input
                   type="text"
-                  value={drive.class}
+                  value={drive.applicable_classes}
                   onChange={(e) => handleTabeDataChange(e,drive.id)}
                   name="applicable_classes"
 
