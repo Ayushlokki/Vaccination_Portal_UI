@@ -108,7 +108,7 @@ const Reports = () => {
               {reportData.map((entry, index) => (
                 <tr key={index}>
                   <td>{entry.student_name}</td>
-                  <td>{entry.vaccinated ? 'Yes' : 'No'}</td>
+                  <td>{entry.vaccinated}</td>
                   <td>{entry.vaccination_date || 'N/A'}</td>
                   <td>{entry.vaccine_name || 'N/A'}</td>
                 </tr>
