@@ -1,0 +1,6 @@
+name,class,vaccination_status,vaccine_name,vaccination_date
+Alice,5A,no,,
+Bob,6B,yes,Covaxin,2023-05-23
+Charlie,7C,yes,Covaxin,2023-05-23
+David,8A,no,,
+Eve,6A,yes,Covidshield,2023-05-23

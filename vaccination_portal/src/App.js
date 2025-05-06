@@ -39,6 +39,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<NavBar change={handleTabChange} tab={tab}><Dashboard /></NavBar>} />
         <Route path="/manage" element={<NavBar change={handleTabChange} tab={tab}><StudentManagement /></NavBar>} />
         <Route path="/drives" element={<NavBar change={handleTabChange} tab={tab}><Vaccination /></NavBar>} />

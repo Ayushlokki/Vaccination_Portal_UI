@@ -1,6 +1,0 @@
-name,class,vaccination_status,vaccine_name,vaccination_date
-Alice,5A,No,,
-Bob,6B,Yes,Covaxin,2023-05-23
-Charlie,7C,Yes,Covaxin,2023-05-23
-David,8A,No,,
-Eve,6A,Yes,Covishield,2023-05-23

@@ -16,7 +16,6 @@ const Reports = () => {
   const handleGenerateReport =async () => {
     setLoading(true);
     try {
-      debugger;
       const response = await fetch(`http://127.0.0.1:5000/api/reports/vaccinations?vaccine_name=${encodeURIComponent(selectedVaccine)}`, {
         method: 'GET'
       });
@@ -40,7 +39,7 @@ const Reports = () => {
     const header = ['Student Name', 'Vaccinated', 'Date of Vaccination', 'Vaccine Name'];
     const rows = data.map(entry => [
       entry.student_name,
-      entry.vaccinated ? 'Yes' : 'No',
+      entry.vaccinated ,
       entry.vaccination_date || 'N/A',
       entry.vaccine_name || 'N/A'
     ]);

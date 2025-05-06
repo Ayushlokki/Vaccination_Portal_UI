@@ -1,8 +1,12 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const NavBar = ({change,tab,children}) => {
+const navigate = useNavigate()
     
+  const redirectLogin =()=>{
+    navigate("/login")
+  }
     return (
         <>
         <nav className="navbar navbar-expand-lg navbar-light bg-light mb-4">
@@ -23,6 +27,9 @@ const NavBar = ({change,tab,children}) => {
                   <Link className="nav-link" to="/reports">Reports</Link>
                 </li>
               </ul>
+            </div>
+            <div>
+            <a href="/login" >Logout</a>
             </div>
           </div>
         </nav>

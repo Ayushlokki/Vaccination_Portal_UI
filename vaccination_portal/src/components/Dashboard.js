@@ -27,9 +27,6 @@ const Dashboard = () => {
     fetchMetrics();
   }, []);
 
-  const vaccinatedPercentage = metrics.total_students
-    ? ((metrics.vaccinated_count / metrics.total_students) * 100).toFixed(2)
-    : 0;
 
   return (
     <div className="container mt-4">

@@ -7,22 +7,27 @@ const StudentManagement = () => {
   const [formData, setFormData] = useState({ name: '', class: '', id: '', vaccination_status: '', vaccine_name: '', vaccination_date: '' });
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false)
-
+const [noData , setNoData] = useState(false)
   const fetchStudentData = async () => {
     setLoading(true)
     try {
       const response = await fetch("http://127.0.0.1:5000/api/students");
       const data = await response.json();
-      setStudents(data);
+      console.log("data",data.message)
+      if(data.message === "No students found"){
+        setStudents(data.data)
+
+      }
+      else
+        setStudents(data);
     } catch (err) {
-      console.error("Failed to fetch metrics", err);
+      console.error("Failed to fetch data", err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleFormSubmit = async() => {
-    debugger
+  const handleFormSubmit = async() => {  
     try{
     const response = await fetch("http://127.0.0.1:5000/api/studentdata", {
       method: "POST",
@@ -37,7 +42,6 @@ const StudentManagement = () => {
     if (!response.ok) {
       throw new Error(`Server error: ${response.status}`);
     }
-  debugger;
     const data = await response.json();
     console.log("Response:", data);
     fetchStudentData()
@@ -52,12 +56,6 @@ const StudentManagement = () => {
     const file = e.target.files[0];
     const data = new FormData();
     data.append('file', file);
-    // Papa.parse(file, {
-    //   header: true,
-    //   complete: (results) => {
-    //     setStudents((prev) => [...prev, ...results.data]);
-    //   },
-    // });
     try {
       const response = await fetch('http://127.0.0.1:5000/api/vaccination_upload', {
         method: 'POST',
@@ -65,15 +63,16 @@ const StudentManagement = () => {
         // Note: fetch automatically sets the correct Content-Type boundary
       });
       const json = await response.json();
-      console.log((JSON.stringify(json, null, 2)));
+      if (json?.message === "Data Added Successfully"){
+        fetchStudentData()
+      }
     } catch (error) {
       alert(error.toString());
     }
   };
 
   const handleVaccinate = (student) => {
-    debugger;
-    if (student.vaccinated == "Yes") {
+    if (student.vaccinated === "yes") {
       alert('Already vaccinated with this vaccine!');
       return;
     }
@@ -82,8 +81,7 @@ const StudentManagement = () => {
     );
     setStudents(updated);
   };
-
-  const filteredStudents = students.filter(
+  const filteredStudents = students?.filter(
     (s) =>
       s.name.toLowerCase().includes(search.toLowerCase()) ||
       s.class.toLowerCase().includes(search.toLowerCase()) ||
@@ -95,7 +93,7 @@ const StudentManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  // Logic to calculate the current page's data
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredStudents.slice(indexOfFirstItem, indexOfLastItem);
@@ -109,7 +107,7 @@ const StudentManagement = () => {
   };
 
 const checkFields = () => {
-  return !formData.name || !formData.class  || !formData.vaccination_status || (formData.vaccination_status === "Yes" && (!formData.vaccine_name || !formData.vaccination_date));
+  return !formData.name || !formData.class  || !formData.vaccination_status || (formData.vaccination_status === "yes" && (!formData.vaccine_name || !formData.vaccination_date));
 };
 
 useEffect(() => {
@@ -159,12 +157,15 @@ if(loading){
           </tr>
         </thead>
         <tbody>
-          {currentItems.map((s, idx) => (
+          {currentItems.length === 0 ?
+          <div >No Data Found</div>
+            :
+            currentItems?.map((s, idx) => (
             <tr key={idx}>
               <td>{s.name}</td>
               <td>{s.class}</td>
               <td>{s.id}</td>
-              <td>{(s.vaccine_name !== null && s.vaccine_date !== null) ?"Yes" :"No"  }</td>
+              <td>{s.vaccinated  }</td>
               <td>{s.vaccine_name || '-'}</td>
               <td>{s.vaccine_date || '-'}</td>
               <td>
@@ -173,7 +174,7 @@ if(loading){
                 </button>
               </td>
             </tr>
-          ))}
+          ))          }
         </tbody>
       </table>
 
@@ -252,12 +253,12 @@ if(loading){
                       }
                     >
                       <option value="">Select</option>
-                      <option value="Yes">Yes</option>
-                      <option value="No">No</option>
+                      <option value="yes">Yes</option>
+                      <option value="no">No</option>
                     </select>
                   </div>
                   
-                  {formData.vaccination_status === "Yes" && (
+                  {formData.vaccination_status === "yes" && (
                     <><div className="form-group">
                       <label>Vaccination Date</label>
                       <input

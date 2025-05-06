@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 
 const Vaccination = () => {
     const [drives, setDrives] = useState([]);
-  const [form, setForm] = useState({ vaccine_name: '', drive_date: '', available_doses: '', applicable_classes: [] });
-
+  const [form, setForm] = useState({ vaccine_name: '', drive_date: '', available_doses: '', applicable_classes: '' });
+  const [loading, setLoading] = useState(true)
   const fecthData =async ()=>{
     try {
-      debugger;
+
       const response = await fetch('http://127.0.0.1:5000/api/drives', {
         method: 'GET',
      
@@ -16,6 +16,7 @@ const Vaccination = () => {
 
       console.log((JSON.stringify(json, null, 2)));
       setDrives(json)
+      setLoading (false)
     } catch (error) {
       alert(error.toString());
     }
@@ -32,19 +33,14 @@ const Vaccination = () => {
 
 
   const handleChange =  (e) => {
-    debugger;
+
     const { name, value } = e.target;
-    if (name === 'applicable_classes') {
-      // Split by comma and trim spaces
-      const classesArray = value.split(',').map(cls => cls.trim());
-      setForm({ ...form, [name]: classesArray });
-    } else {
+  
       setForm({ ...form, [name]: value });
-    }
+    
   };
 
   const handleTabeDataChange =  (e,id) => {
-    debugger;
     const { name, value } = e.target;
     setDrives(prevDrives => {
       return prevDrives.map(drive => {
@@ -52,7 +48,7 @@ const Vaccination = () => {
           return {
             ...drive,
             [name]: name === 'applicable_classes'
-              ? value.split(',').map(cls => cls.trim())
+              ? value
               : value
           };
         }
@@ -67,9 +63,8 @@ const Vaccination = () => {
       return;
     }
 
-    console.log(form)
     try {
-      debugger;
+      setLoading(true)
       const response = await fetch('http://127.0.0.1:5000/api/adddrives', {
         method: 'POST',
         body: JSON.stringify(form),
@@ -78,21 +73,14 @@ const Vaccination = () => {
         },
       });
       const json = await response.json();
-      console.log((JSON.stringify(json, null, 2)));
+      if (json.message === "Drive created"){
+        fecthData()
+        setForm({ vaccine_name: '', drive_date: '', available_doses: '', applicable_classes: '' })
+        }
     } catch (error) {
       alert(error.toString());
     }
 
-    // if (editIndex !== null) {
-    //   const updated = [...drives];
-    //   updated[editIndex] = { ...form };
-    //   setDrives(updated);
-    //   setEditIndex(null);
-    // } else {
-    //   setDrives([...drives, { ...form }]);
-    // }
-
-    // setForm({ vaccine: '', date: '', doses: '', classes: '' });
   };
   const getDriveById = (id) => {
     return drives.find((drive) => drive.id === id);
@@ -102,7 +90,6 @@ const Vaccination = () => {
     const selectedDrive =getDriveById(id);
     console.log("selected",selectedDrive)
     try {
-      debugger;
       const response = await fetch(`http://127.0.0.1:5000/api/drives/${id}`, {
         method: 'PUT',
         body: JSON.stringify(selectedDrive),
@@ -111,7 +98,11 @@ const Vaccination = () => {
         },
       });
       const json = await response.json();
-      console.log((JSON.stringify(json, null, 2)));
+      if (json.message === "Drive updated"){
+        fecthData()
+        alert("Drive has been updated")
+        }
+      
     } catch (error) {
       alert(error.toString());
     }
@@ -120,9 +111,18 @@ const Vaccination = () => {
   const isPast = (date) => new Date(date) < new Date();
 
   useEffect(() => {
-fecthData()
+    fecthData()
   }, [])
 console.log("drives",drives)
+if(loading){
+  return(
+    <div className="d-flex justify-content-center align-items-center" style={{ height: '200px' }}>
+    <div className="spinner-border text-primary" role="status">
+      <span className="visually-hidden">Loading...</span>
+    </div>
+  </div>
+  )
+}
   return (
     <div className="container my-4">
       <h3 className="mb-4">Vaccine Drive Manager</h3>
